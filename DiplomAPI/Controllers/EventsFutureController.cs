@@ -25,8 +25,7 @@ namespace DiplomAPI.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            string query = @"SELECT eventId, eventName, eventDescription, eventPicture, 
-                convert(varchar(10), dateOfStart, 120) AS dateOfStart, convert(varchar(10), dateOfEnd, 120) AS dateOfEnd, address, tag
+            string query = @"SELECT eventId, eventName, eventPicture
                 FROM dbo.Events WHERE (GETDATE() < dateOfStart) AND (GETDATE() < dateOfEnd)";
 
             DataTable Events = new DataTable();

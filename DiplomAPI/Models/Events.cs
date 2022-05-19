@@ -13,6 +13,6 @@ namespace DiplomAPI.Models
         public string eventPicture { get; set; }
         public string dateOfStart { get; set; }
         public string dateOfEnd { get; set; }
-        public string tag { get; set; }
+        public int tagId { get; set; }
     }
 }
