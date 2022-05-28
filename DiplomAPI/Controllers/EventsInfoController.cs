@@ -12,12 +12,11 @@ namespace DiplomAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MarksController : ControllerBase
+    public class EventsInfoController : ControllerBase
     {
-
         private readonly IConfiguration _configuration;
 
-        public MarksController(IConfiguration configuration)
+        public EventsInfoController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -25,27 +24,25 @@ namespace DiplomAPI.Controllers
         [HttpGet]
         public JsonResult Get(int id)
         {
-            string query = @"SELECT eventId, ROUND(AVG(mark), 1) AS mark FROM dbo.Marks
-                WHERE eventId = @eventId
-                GROUP BY eventId";
+            string query = @"SELECT eventName, eventDescription, eventPicture, dateOfStart, dateOfEnd, address FROM dbo.Events WHERE eventId=@eventId";
 
-            DataTable Marks = new DataTable();
+            DataTable EventsInfo = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");
-            SqlDataReader MarksReader;
+            SqlDataReader EventsInfoReader;
             using (SqlConnection newCon = new SqlConnection(sqlDS))
             {
                 newCon.Open();
-                using (SqlCommand mrCommand = new SqlCommand(query, newCon))
+                using (SqlCommand evInCommand = new SqlCommand(query, newCon))
                 {
-                    mrCommand.Parameters.AddWithValue("@eventId", id);
-                    MarksReader = mrCommand.ExecuteReader();
-                    Marks.Load(MarksReader);
-                    MarksReader.Close();
+                    evInCommand.Parameters.AddWithValue("@eventId", id);
+                    EventsInfoReader = evInCommand.ExecuteReader();
+                    EventsInfo.Load(EventsInfoReader);
+                    EventsInfoReader.Close();
                     newCon.Close();
                 }
             }
 
-            return new JsonResult(Marks);
+            return new JsonResult(EventsInfo);
         }
     }
 }

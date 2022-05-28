@@ -12,12 +12,14 @@ namespace DiplomAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MarksController : ControllerBase
+    public class CommentsController : ControllerBase
     {
-
+        string query = @"SELECT dbo.Users.userName, dbo.Comments.comment 
+            FROM dbo.Comments INNER JOIN dbo.Users ON dbo.Comments.userId = dbo.Users.userId
+            WHERE (dbo.Comments.userId = 1)";
         private readonly IConfiguration _configuration;
 
-        public MarksController(IConfiguration configuration)
+        public CommentsController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -29,23 +31,23 @@ namespace DiplomAPI.Controllers
                 WHERE eventId = @eventId
                 GROUP BY eventId";
 
-            DataTable Marks = new DataTable();
+            DataTable Comments = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");
-            SqlDataReader MarksReader;
+            SqlDataReader CommentsReader;
             using (SqlConnection newCon = new SqlConnection(sqlDS))
             {
                 newCon.Open();
-                using (SqlCommand mrCommand = new SqlCommand(query, newCon))
+                using (SqlCommand cmCommand = new SqlCommand(query, newCon))
                 {
-                    mrCommand.Parameters.AddWithValue("@eventId", id);
-                    MarksReader = mrCommand.ExecuteReader();
-                    Marks.Load(MarksReader);
-                    MarksReader.Close();
+                    cmCommand.Parameters.AddWithValue("@eventId", id);
+                    CommentsReader = cmCommand.ExecuteReader();
+                    Comments.Load(CommentsReader);
+                    CommentsReader.Close();
                     newCon.Close();
                 }
             }
 
-            return new JsonResult(Marks);
+            return new JsonResult(Comments);
         }
     }
 }

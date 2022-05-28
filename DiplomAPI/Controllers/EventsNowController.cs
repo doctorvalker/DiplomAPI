@@ -25,7 +25,7 @@ namespace DiplomAPI.Controllers
         public JsonResult Get()
         {
             string query = @"SELECT eventId, eventName, eventPicture
-                FROM dbo.Events WHERE (GETDATE() > dateOfStart) AND (GETDATE() < dateOfEnd)";
+                FROM dbo.Events WHERE (GETDATE() >= dateOfStart) AND (GETDATE() <= dateOfEnd)";
 
             DataTable Events = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");

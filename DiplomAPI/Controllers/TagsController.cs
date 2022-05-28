@@ -12,40 +12,36 @@ namespace DiplomAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MarksController : ControllerBase
+    public class TagsController : ControllerBase
     {
-
         private readonly IConfiguration _configuration;
 
-        public MarksController(IConfiguration configuration)
+        public TagsController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
         [HttpGet]
-        public JsonResult Get(int id)
+        public JsonResult Get()
         {
-            string query = @"SELECT eventId, ROUND(AVG(mark), 1) AS mark FROM dbo.Marks
-                WHERE eventId = @eventId
-                GROUP BY eventId";
+            string query = @"SELECT tagId, tag FROM Tags";
 
-            DataTable Marks = new DataTable();
+            DataTable Tags = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");
-            SqlDataReader MarksReader;
+            SqlDataReader TagsReader;
             using (SqlConnection newCon = new SqlConnection(sqlDS))
             {
                 newCon.Open();
-                using (SqlCommand mrCommand = new SqlCommand(query, newCon))
+                using (SqlCommand tgCommand = new SqlCommand(query, newCon))
                 {
-                    mrCommand.Parameters.AddWithValue("@eventId", id);
-                    MarksReader = mrCommand.ExecuteReader();
-                    Marks.Load(MarksReader);
-                    MarksReader.Close();
+                    TagsReader = tgCommand.ExecuteReader();
+                    Tags.Load(TagsReader);
+                    TagsReader.Close();
                     newCon.Close();
                 }
             }
 
-            return new JsonResult(Marks);
+            return new JsonResult(Tags);
         }
     }
 }
