@@ -24,7 +24,7 @@ namespace DiplomAPI.Controllers
         [HttpGet]
         public JsonResult Get(int id)
         {
-            string query = @"SELECT eventName, eventDescription, eventPicture, dateOfStart, dateOfEnd, address FROM dbo.Events WHERE tagId=@tagId";
+            string query = @"SELECT eventName, eventDescription, eventPicture FROM dbo.Events WHERE tagId=@tagId";
 
             DataTable EventsTags = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");
