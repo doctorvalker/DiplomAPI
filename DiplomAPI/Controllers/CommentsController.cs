@@ -64,7 +64,7 @@ namespace DiplomAPI.Controllers
                 {
                     cmmntAddCommand.Parameters.AddWithValue("@eventId", cmmnts.eventId);
                     cmmntAddCommand.Parameters.AddWithValue("@userId", cmmnts.userId);
-                    cmmntAddCommand.Parameters.AddWithValue("@mark", cmmnts.comment);
+                    cmmntAddCommand.Parameters.AddWithValue("@comment", cmmnts.comment);
                     CommentsAddReader = cmmntAddCommand.ExecuteReader();
                     CommentsAdd.Load(CommentsAddReader);
                     CommentsAddReader.Close();
@@ -72,7 +72,7 @@ namespace DiplomAPI.Controllers
                 }
             }
 
-            return new JsonResult(MarksAdd);
+            return new JsonResult(CommentsAdd);
         }
     }
 }
