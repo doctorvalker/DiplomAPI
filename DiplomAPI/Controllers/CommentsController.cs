@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using DiplomAPI.Models;
 
 namespace DiplomAPI.Controllers
 {
@@ -14,9 +15,6 @@ namespace DiplomAPI.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        string query = @"SELECT dbo.Users.userName, dbo.Comments.comment 
-            FROM dbo.Comments INNER JOIN dbo.Users ON dbo.Comments.userId = dbo.Users.userId
-            WHERE (dbo.Comments.userId = 1)";
         private readonly IConfiguration _configuration;
 
         public CommentsController(IConfiguration configuration)
@@ -24,12 +22,12 @@ namespace DiplomAPI.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public JsonResult Get(int id)
         {
-            string query = @"SELECT eventId, ROUND(AVG(mark), 1) AS mark FROM dbo.Marks
-                WHERE eventId = @eventId
-                GROUP BY eventId";
+            string query = @"SELECT dbo.Comments.comment, dbo.Users.userName
+                FROM dbo.Comments INNER JOIN dbo.Users ON dbo.Comments.userId = dbo.Users.userId
+                WHERE (dbo.Comments.eventId = @eventId)";
 
             DataTable Comments = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");
@@ -48,6 +46,33 @@ namespace DiplomAPI.Controllers
             }
 
             return new JsonResult(Comments);
+        }
+
+        [HttpPost]
+        public JsonResult Post(Comments cmmnts)
+        {
+            string query = @"insert into dbo.Comments
+                values (@eventId, @userId, @comment)";
+
+            DataTable CommentsAdd = new DataTable();
+            string sqlDS = _configuration.GetConnectionString("EventsApp");
+            SqlDataReader CommentsAddReader;
+            using (SqlConnection newCon = new SqlConnection(sqlDS))
+            {
+                newCon.Open();
+                using (SqlCommand cmmntAddCommand = new SqlCommand(query, newCon))
+                {
+                    cmmntAddCommand.Parameters.AddWithValue("@eventId", cmmnts.eventId);
+                    cmmntAddCommand.Parameters.AddWithValue("@userId", cmmnts.userId);
+                    cmmntAddCommand.Parameters.AddWithValue("@mark", cmmnts.comment);
+                    CommentsAddReader = cmmntAddCommand.ExecuteReader();
+                    CommentsAdd.Load(CommentsAddReader);
+                    CommentsAddReader.Close();
+                    newCon.Close();
+                }
+            }
+
+            return new JsonResult(MarksAdd);
         }
     }
 }

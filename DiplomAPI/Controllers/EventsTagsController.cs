@@ -21,10 +21,10 @@ namespace DiplomAPI.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public JsonResult Get(int id)
         {
-            string query = @"SELECT eventName, eventDescription, eventPicture FROM dbo.Events WHERE tagId=@tagId";
+            string query = @"SELECT eventId, eventName, eventDescription, eventPicture FROM dbo.Events WHERE tagId=@tagId AND (status = 'Активно')";
 
             DataTable EventsTags = new DataTable();
             string sqlDS = _configuration.GetConnectionString("EventsApp");
